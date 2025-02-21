@@ -1,15 +1,16 @@
 pipeline {
     agent any
     tools {
-        maven 'Maven'
+        maven 'Maven' // Ensure 'Maven' is configured in Jenkins Global Tool Configuration
     }
     environment {
-        DOCKER_IMAGE = 'jenny903/jenny:latest'
+        DOCKER_IMAGE = 's5carles/del:1'
+        DOCKER_USERNAME = 's5carles' // Define your Docker Hub username here
     }
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/Angecalais97/handson'
+                git branch: 'main', url: 'https://github.com/Angecalais97/handson'
             }
         }
         stage('Build') {
@@ -26,7 +27,7 @@ pipeline {
         }
         stage('Login to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'Dockerhub-pipeline-cred', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                withCredentials([string(credentialsId: 'id', variable: 'DOCKER_PASSWORD')]) {
                     script {
                         sh "echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin"
                     }
